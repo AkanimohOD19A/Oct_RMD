@@ -1,0 +1,756 @@
+---
+title: "NYSCDraft_III"
+author: "Ostinato Rigore"
+date: "8 November 2019"
+output: 
+  word_document: 
+    fig_caption: yes
+    fig_height: 7.5
+    fig_width: 8
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+#echo= False : This makes the codes invincible in the report
+#cache = True : Because certain codes had to be constantly remodified & re-run
+#, it makes the re-running of the codes chunks quicker
+#fig.width = 8: This was an attempt to corce all the charts into a certain dimension.
+
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+```
+
+```{r Column names}
+#This are the various column namess in the data set this particular variable will be continually used through out the analysis.
+##It is necessary to create this from the data.
+colnames <- c('LOCATION OF PRIMARY ASSIGNMENT',
+              'IN WHICH SECTOR',
+              'NATURE OF PLACEMENT',
+              'HOW RELEVANT WAS THE FIELD OF STUDY',
+              'ASSESSMENT OF ATTITUDE OF PERMANENT STAFF',
+              'DEGREE OF JOB SATISFACTION',
+              'WERE YOU GIVEN ACCOMMODATION',
+              'HOW EFFECTIVE WAS YOUR CDS GROUP',
+              'ASSESSMENT OF INTERACTION BETWEEN GROUP MEMBERS TOWARDS THE CDS PROGRAMS',
+              'HOW SUPPORTIVE WAS THE HOST COMMUNITY TO THE PROJECT',
+              'DO YOU INTEND TO SUSTAIN THE SKILL(S) ACQUIRED',
+              'DID YOU HAVE ACCESS TO ANY FINANCIAL SUPPORT',
+              'OPINION ABOUT NYSC SCHEME BEFORE MOBILISATION FOR NATIONAL SERVICE',
+              'OPINION CHANGE FROM PARTICIPATION IN NYSC',
+              'HOW WILL YOU ASSESS DISCIPLINE AMONG CORPS MEMBERS',
+              'HOW WILL YOU ASSESS PATRIOTISM',
+              'HOW WILL YOU ASSESS THE ADAPTABILITY',
+              'HOW WILL YOU ASSESS TEAM SPIRIT',
+              'HOW WILL YOU ASSESS THE INTEGRATION',
+              'HOW WILL YOU ASSESS  NATIONAL GROWTH',
+              'HOW WILL YOU ASSESS SELF RELIANCE',
+              'HOW WILL YOU ASSESS NATIONAL UNITY',
+              'ARE YOU WILLING TO STAY BACK IN YOUR STATE OFDEPLOYMENT')
+```
+
+```{r Importing: Libraries & Dataset, include = FALSE}
+#This code chunk, can be divided into the following sections:
+##Importing libraries, Note that they have to be downloaded first
+##Importing the dataset
+##Transforming that dataset into a very nice format called 'tibble', for relevannce it is like turning an image from .png  to .jpeg.
+
+library(tidyverse) 
+library(foreign)
+library(knitr)
+
+
+#Importing .sav file from SPSS, use this s/l/a/n/t lines
+NYSC2019 <- read.spss('C:/Users/Akanimore/Desktop/NYSC2019/159 QUESTIONNAIRE OUTGOING 2019 CORPERS.sav', 
+                      use.value.labels = TRUE, to.data.frame = TRUE, col_names= colnames) 
+
+NYSCtibble <- as_tibble(NYSC2019[-c(195:461),])    #this data ended at row 195, but it exported 461
+```
+
+```{r Creating funtions}
+#The report is basically categorized into a Table a table, its description, a bar and pie chart, in this code chunk are the functions that we will be re-iterating with through out the analysis.
+
+##This function simply creates a custom proportion of the data set
+proportion <-  function(Data) {
+  tbl <- table(Data)
+  rnd <- ((round(prop.table(tbl), 2) *100)) #Rounds the values to 2, 3 is the std though.
+  as.data.frame(rnd)
+}
+
+Frequency <- function(Data) {
+  as.data.frame(summary(Data))
+}
+
+##Uses the kable function from the 'knitr' library to create a table.
+Table <- function(Q_No){
+  kable(Q_No,
+        col.names = c('Frequency', 'Percentage (%)'), 
+        align = 'c',
+        caption = 'Frequency & Percentage')
+}
+
+##Here we create a function that creates charts from the ggplot library.
+##Horizontal Bar Charts.
+Bar_Chart <- function(Distribution){
+  NYSCtibble %>%
+  ggplot() +
+  geom_bar(aes(x = Distribution, fill = Distribution),
+           width = 1) + 
+  coord_flip()
+}
+
+Pie_Chart <- function(Distribution){
+  NYSCtibble %>%
+  ggplot() +
+  geom_bar(aes(x = Distribution, fill = Distribution),
+           width = 1) + 
+  coord_polar()
+}
+```
+
+\newpage
+
+#1 Distribution of `r colnames[1]`  
+
+```{r distribution}
+prop <- proportion(NYSCtibble$QB1)
+
+Freq <- Frequency(NYSCtibble$QB1)
+
+Q1 = cbind(Freq, prop[2])
+
+#Using QD3 as e.g.
+#a[[1]][1] = YES; [[2]][1] = 0.077
+#a[[1]][4] = NA; [[2]][4] = 0.294
+```
+
+
+## Table showing distribution `r colnames[1]` of Corp Members
+```{r tabulating}
+Table(Q1)
+```
+
+The coressponding Table and Chart indicatess that `r Q1[[2]][1]`% were deployed to **`r prop[[1]][1]`**, `r Q1[[2]][2]`% were deployed to **`r prop[[1]][2]`**, while `r Q1[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[1]` of Corp Members
+```{r charts, fig.weight= 5, fig.height=5}
+Bar_Chart(NYSCtibble$QB1)
+Pie_Chart(NYSCtibble$QB1)
+```
+  
+\newpage
+
+
+#2 Distribution of `r colnames[2]`
+```{r}
+prop <- proportion(NYSCtibble$QB2)
+
+Freq <- Frequency(NYSCtibble$QB2)
+
+Q2 = cbind(Freq, prop[2])
+
+```
+
+## Table showing distribution `r colnames[2]` of Corp Members
+```{r }
+Table(Q2)
+```
+
+Table and Figure below shows that `r Q2[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q2[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q2[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q2[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors , while `r Q2[[2]][5]`% of respondents did not respond to the question.
+
+## Charts showing distribution `r colnames[2]` of Corp Members
+```{r }
+Bar_Chart(NYSCtibble$QB2)
+Pie_Chart(NYSCtibble$QB2)
+```
+
+
+\newpage
+
+
+#3 Distribution of `r colnames[3]`
+```{r}
+prop <- proportion(NYSCtibble$QB3)
+
+Freq <- Frequency(NYSCtibble$QB3)
+
+Q3 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[1]` of Corp Members
+```{r}
+Table(Q3)
+```
+
+The coressponding Table and Chart indicatess that `r Q3[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q3[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q3[[2]][3]`% of respondents did not respond to the question. 
+  
+```{r}
+Bar_Chart(NYSCtibble$QB3)
+Pie_Chart(NYSCtibble$QB3)
+```
+
+
+
+
+
+
+\newpage
+
+
+#4 Distribution of `r colnames[4]`
+```{r}
+prop <- proportion(NYSCtibble$QB5)
+
+Freq <- Frequency(NYSCtibble$QB5)
+
+Q4 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[4]` of Corp Members
+```{r}
+Table(Q4)
+```
+
+The coressponding Table and Chart indicatess that `r Q4[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q4[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q4[[2]][3]`% of respondents did not respond to the question. 
+  
+```{r}
+Bar_Chart(NYSCtibble$QB5)
+Pie_Chart(NYSCtibble$QB5)
+```
+
+
+
+
+\newpage
+
+
+#5 Distribution of `r colnames[5]`
+```{r}
+prop <- proportion(NYSCtibble$QB13)
+
+Freq <- Frequency(NYSCtibble$QB13)
+
+Q5 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[5]` of Corp Members
+```{r}
+Table(Q5)
+```
+
+The coressponding Table and Chart indicatess that `r Q5[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q5[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q5[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors while `r Q4[[2]][4]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[5]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QB13)
+Pie_Chart(NYSCtibble$QB13)
+```
+
+\newpage
+
+
+
+#6 Distribution of `r colnames[6]`
+```{r}
+prop <- proportion(NYSCtibble$QB15)
+
+Freq <- Frequency(NYSCtibble$QB15)
+
+Q6 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[5]` of Corp Members
+```{r}
+Table(Q6)
+```
+
+The coressponding Table and Chart indicatess that `r Q6[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q6[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q6[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors while `r Q6[[2]][4]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[6]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QB15)
+Pie_Chart(NYSCtibble$QB15
+          
+          )
+```
+
+\newpage
+
+
+
+#7 Distribution of `r colnames[7]`
+```{r}
+prop <- proportion(NYSCtibble$QB17)
+
+Freq <- Frequency(NYSCtibble$QB17)
+
+Q7 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[7]` of Corp Members
+```{r}
+Table(Q7)
+```
+
+The coressponding Table and Chart indicatess that `r Q7[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q7[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q7[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q7[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, `r Q7[[2]][5]`% were deployed to **`r prop[[1]][5]`** sectors, while `r Q7[[2]][6]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[7]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QB17)
+Pie_Chart(NYSCtibble$QB17)
+```
+
+\newpage
+
+
+#8 Distribution of `r colnames[8]`
+```{r}
+prop <- proportion(NYSCtibble$QC2)
+
+Freq <- Frequency(NYSCtibble$QC2)
+
+Q8 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[8]` of Corp Members
+```{r}
+Table(Q8)
+```
+
+The coressponding Table and Chart indicatess that `r Q8[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q8[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q8[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, while `r Q8[[2]][4]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[8]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QC2)
+Pie_Chart(NYSCtibble$QC2)
+```
+
+\newpage
+
+
+
+
+
+#9 Distribution of `r colnames[9]`
+```{r}
+prop <- proportion(NYSCtibble$QC3)
+
+Freq <- Frequency(NYSCtibble$QC3)
+
+Q9 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[9]` of Corp Members
+```{r}
+Table(Q9)
+```
+
+The coressponding Table and Chart indicatess that `r Q9[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q9[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q9[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, while `r Q9[[2]][4]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[9]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QC3)
+Pie_Chart(NYSCtibble$QC3)
+```
+
+\newpage
+
+
+
+
+
+#10 Distribution of `r colnames[10]`
+```{r}
+prop <- proportion(NYSCtibble$QC8)
+
+Freq <- Frequency(NYSCtibble$QC8)
+
+Q10 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[10]` of Corp Members
+```{r}
+Table(Q10)
+```
+
+The coressponding Table and Chart indicatess that `r Q10[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q10[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q10[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, while `r Q10[[2]][4]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[10]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QC8)
+Pie_Chart(NYSCtibble$QC8)
+```
+
+\newpage
+
+
+
+
+
+#11 Distribution of `r colnames[11]`
+```{r}
+prop <- proportion(NYSCtibble$QD2)
+
+Freq <- Frequency(NYSCtibble$QD2)
+
+Q11 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[11]` of Corp Members
+```{r}
+Table(Q11)
+```
+
+The coressponding Table and Chart indicatess that `r Q11[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q11[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q11[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[11]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QD2)
+Pie_Chart(NYSCtibble$QD2)
+```
+
+\newpage
+
+
+
+
+#12 Distribution of `r colnames[12]`
+```{r}
+prop <- proportion(NYSCtibble$QD3)
+
+Freq <- Frequency(NYSCtibble$QD3)
+
+Q12 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[12]` of Corp Members
+```{r}
+Table(Q12)
+```
+
+The coressponding Table and Chart indicatess that `r Q12[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q12[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q12[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[12]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QD3)
+Pie_Chart(NYSCtibble$QD3)
+```
+
+\newpage
+
+
+
+
+#13 Distribution of `r colnames[13]`
+```{r}
+prop <- proportion(NYSCtibble$QE1)
+
+Freq <- Frequency(NYSCtibble$QE1)
+
+Q13 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[13]` of Corp Members
+```{r}
+Table(Q13)
+```
+
+The coressponding Table and Chart indicatess that `r Q13[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q13[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q13[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[13]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE1)
+Pie_Chart(NYSCtibble$QE1)
+```
+
+\newpage
+
+
+
+
+#14 Distribution of `r colnames[14]`
+```{r}
+prop <- proportion(NYSCtibble$QE2)
+
+Freq <- Frequency(NYSCtibble$QE2)
+
+Q14 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[14]` of Corp Members
+```{r}
+Table(Q14)
+```
+
+The coressponding Table and Chart indicatess that `r Q14[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q14[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q14[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[14]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE2)
+Pie_Chart(NYSCtibble$QE2)
+```
+
+\newpage
+
+
+
+
+
+#15 Assessment of Selected NYSC objectives
+In this series only certain selected Objectives will be assessed amoung Corp members.
+
+##15.1 Distribution of `r colnames[15]`
+```{r}
+prop <- proportion(NYSCtibble$QE3a)
+
+Freq <- Frequency(NYSCtibble$QE3a)
+
+Q15 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[15]` of Corp Members
+```{r}
+Table(Q15)
+```
+
+The coressponding Table and Chart indicatess that `r Q15[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q15[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q15[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q15[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q15[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[15]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3a)
+Pie_Chart(NYSCtibble$QE3a)
+```
+
+\newpage
+
+
+
+
+##15.2 Distribution of `r colnames[16]`
+```{r}
+prop <- proportion(NYSCtibble$QE3b)
+
+Freq <- Frequency(NYSCtibble$QE3b)
+
+Q16 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[16]` of Corp Members
+```{r}
+Table(Q16)
+```
+
+The coressponding Table and Chart indicatess that `r Q16[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q16[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q16[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q16[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q16[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[16]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3b)
+Pie_Chart(NYSCtibble$QE3b)
+```
+
+\newpage
+
+
+
+
+##15.3 Distribution of `r colnames[17]`
+```{r}
+prop <- proportion(NYSCtibble$QE3c)
+
+Freq <- Frequency(NYSCtibble$QE3c)
+
+Q17 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[17]` of Corp Members
+```{r}
+Table(Q17)
+```
+
+The coressponding Table and Chart indicatess that `r Q17[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q17[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q17[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q17[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q17[[2]][5]`% of respondents did not respond to the question.
+
+### Charts showing distribution `r colnames[17]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3c)
+Pie_Chart(NYSCtibble$QE3c)
+```
+
+\newpage
+
+
+
+##15.4 Distribution of `r colnames[18]`
+```{r}
+prop <- proportion(NYSCtibble$QE3d)
+
+Freq <- Frequency(NYSCtibble$QE3d)
+
+Q18 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[18]` of Corp Members
+```{r}
+Table(Q18)
+```
+
+The coressponding Table and Chart indicatess that `r Q18[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q18[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q18[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q18[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q18[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[18]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3d)
+Pie_Chart(NYSCtibble$QE3d)
+```
+
+\newpage
+
+
+
+
+##15.5 Distribution of `r colnames[19]`
+```{r}
+prop <- proportion(NYSCtibble$QE3e)
+
+Freq <- Frequency(NYSCtibble$QE3e)
+
+Q19 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[19]` of Corp Members
+```{r}
+Table(Q19)
+```
+
+The coressponding Table and Chart indicatess that `r Q19[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q19[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q19[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q19[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q19[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[19]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3e)
+Pie_Chart(NYSCtibble$QE3e)
+```
+
+\newpage
+
+
+
+
+##15.6 Distribution of `r colnames[20]`
+```{r}
+prop <- proportion(NYSCtibble$QE3f)
+
+Freq <- Frequency(NYSCtibble$QE3f)
+
+Q20 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[20]` of Corp Members
+```{r}
+Table(Q20)
+```
+
+The coressponding Table and Chart indicatess that `r Q20[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q20[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q20[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q20[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q20[[2]][5]`% of respondents did not respond to the question.
+
+### Charts showing distribution `r colnames[20]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3f)
+Pie_Chart(NYSCtibble$QE3f)
+```
+
+\newpage
+
+
+
+##15.7 Distribution of `r colnames[21]`
+```{r}
+prop <- proportion(NYSCtibble$QE3g)
+
+Freq <- Frequency(NYSCtibble$QE3g)
+
+Q21 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[21]` of Corp Members
+```{r}
+Table(Q21)
+```
+
+The coressponding Table and Chart indicatess that `r Q21[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q21[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q21[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q21[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q21[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[21]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3g)
+Pie_Chart(NYSCtibble$QE3g)
+```
+
+\newpage
+
+
+
+
+##15.8 Distribution of `r colnames[22]`
+```{r}
+prop <- proportion(NYSCtibble$QE3h)
+
+Freq <- Frequency(NYSCtibble$QE3h)
+
+Q22 = cbind(Freq, prop[2])
+```
+
+
+### Table showing distribution `r colnames[22]` of Corp Members
+```{r}
+Table(Q22)
+```
+
+The coressponding Table and Chart indicatess that `r Q22[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q22[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, `r Q22[[2]][3]`% were deployed to **`r prop[[1]][3]`** sectors, `r Q22[[2]][4]`% were deployed to **`r prop[[1]][4]`** sectors, while `r Q22[[2]][5]`% of respondents did not respond to the question. 
+
+### Charts showing distribution `r colnames[22]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE3h)
+Pie_Chart(NYSCtibble$QE3h)
+```
+
+\newpage
+
+
+
+
+
+#16 Distribution of `r colnames[23]`
+```{r}
+prop <- proportion(NYSCtibble$QE5)
+
+Freq <- Frequency(NYSCtibble$QE5)
+
+Q23 = cbind(Freq, prop[2])
+```
+
+
+## Table showing distribution `r colnames[23]` of Corp Members
+```{r}
+Table(Q23)
+```
+
+The coressponding Table and Chart indicatess that `r Q23[[2]][1]`% were deployed to **`r prop[[1]][1]`** sectors, `r Q23[[2]][2]`% were deployed to **`r prop[[1]][2]`** sectors, while `r Q23[[2]][3]`% of respondents did not respond to the question. 
+
+## Charts showing distribution `r colnames[23]` of Corp Members
+```{r}
+Bar_Chart(NYSCtibble$QE5)
+Pie_Chart(NYSCtibble$QE5)
+```
