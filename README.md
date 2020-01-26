@@ -1,4 +1,6 @@
 # Oct_RMD
+##Automating Report and visualizations for NYSC opinion survey using RMD’s.
+
 Consists of just R codes, data is proprietary and exempted
 
 This procedure is broken into 3 major operations: Distribution, Data Entry and Report Writing respectively; while these operations are dependent on physical use of officials and/or Corp. Members. 
